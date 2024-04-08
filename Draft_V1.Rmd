@@ -412,7 +412,8 @@ filtered_samp_nrc_party %>%
   geom_point(alpha=0.25) +
   geom_smooth(method="loess", se = F, alpha=0.25, size = 1.5) +
   labs(y = "Sample NRC sentiment negative ratio by party", x = "Date") +
-  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red", size = 1) +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red", size = 1) + 
+  annotate("text", x = as.Date("2007-09-24"), y = 5, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 4)
   theme_minimal() +
   theme(legend.position = "bottom")
 ```
