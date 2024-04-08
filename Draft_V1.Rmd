@@ -1,0 +1,955 @@
+---
+title: "Draft_markdown_v1"
+author: "River Kim"
+date: "2024-04-07"
+output: html_document
+---
+
+# Set up
+
+```{r, eval=FALSE}
+# Data importing (Following Course Book "Assessment Data")
+library(ggplot2)
+library(plyr)
+library(gdata)
+library(stringr)
+library(data.table)
+
+## Prep Osnabrugge et al.
+data = fread("/Users/garamkim/Downloads/dataverse_files/uk_data.csv", encoding="UTF-8")
+data$date = as.Date(data$date)
+
+#Create time variable
+data$time= NA
+data$time[data$date>=as.Date("2001-01-01") & data$date<=as.Date("2001-06-30")] = "01/1"
+data$time[data$date>=as.Date("2001-07-01") & data$date<=as.Date("2001-12-31")] = "01/2"
+data$time[data$date>=as.Date("2002-01-01") & data$date<=as.Date("2002-06-30")] = "02/1"
+data$time[data$date>=as.Date("2002-07-01") & data$date<=as.Date("2002-12-31")] = "02/2"
+data$time[data$date>=as.Date("2003-01-01") & data$date<=as.Date("2003-06-30")] = "03/1"
+data$time[data$date>=as.Date("2003-07-01") & data$date<=as.Date("2003-12-31")] = "03/2"
+data$time[data$date>=as.Date("2004-01-01") & data$date<=as.Date("2004-06-30")] = "04/1"
+data$time[data$date>=as.Date("2004-07-01") & data$date<=as.Date("2004-12-31")] = "04/2"
+data$time[data$date>=as.Date("2005-01-01") & data$date<=as.Date("2005-06-30")] = "05/1"
+data$time[data$date>=as.Date("2005-07-01") & data$date<=as.Date("2005-12-31")] = "05/2"
+data$time[data$date>=as.Date("2006-01-01") & data$date<=as.Date("2006-06-30")] = "06/1"
+data$time[data$date>=as.Date("2006-07-01") & data$date<=as.Date("2006-12-31")] = "06/2"
+data$time[data$date>=as.Date("2007-01-01") & data$date<=as.Date("2007-06-30")] = "07/1"
+data$time[data$date>=as.Date("2007-07-01") & data$date<=as.Date("2007-12-31")] = "07/2"
+data$time[data$date>=as.Date("2008-01-01") & data$date<=as.Date("2008-06-30")] = "08/1"
+data$time[data$date>=as.Date("2008-07-01") & data$date<=as.Date("2008-12-31")] = "08/2"
+data$time[data$date>=as.Date("2009-01-01") & data$date<=as.Date("2009-06-30")] = "09/1"
+data$time[data$date>=as.Date("2009-07-01") & data$date<=as.Date("2009-12-31")] = "09/2"
+data$time[data$date>=as.Date("2010-01-01") & data$date<=as.Date("2010-06-30")] = "10/1"
+data$time[data$date>=as.Date("2010-07-01") & data$date<=as.Date("2010-12-31")] = "10/2"
+data$time[data$date>=as.Date("2011-01-01") & data$date<=as.Date("2011-06-30")] = "11/1"
+data$time[data$date>=as.Date("2011-07-01") & data$date<=as.Date("2011-12-31")] = "11/2"
+data$time[data$date>=as.Date("2012-01-01") & data$date<=as.Date("2012-06-30")] = "12/1"
+data$time[data$date>=as.Date("2012-07-01") & data$date<=as.Date("2012-12-31")] = "12/2"
+data$time[data$date>=as.Date("2013-01-01") & data$date<=as.Date("2013-06-30")] = "13/1"
+data$time[data$date>=as.Date("2013-07-01") & data$date<=as.Date("2013-12-31")] = "13/2"
+data$time[data$date>=as.Date("2014-01-01") & data$date<=as.Date("2014-06-30")] = "14/1"
+data$time[data$date>=as.Date("2014-07-01") & data$date<=as.Date("2014-12-31")] = "14/2"
+data$time[data$date>=as.Date("2015-01-01") & data$date<=as.Date("2015-06-30")] = "15/1"
+data$time[data$date>=as.Date("2015-07-01") & data$date<=as.Date("2015-12-31")] = "15/2"
+data$time[data$date>=as.Date("2016-01-01") & data$date<=as.Date("2016-06-30")] = "16/1"
+data$time[data$date>=as.Date("2016-07-01") & data$date<=as.Date("2016-12-31")] = "16/2"
+data$time[data$date>=as.Date("2017-01-01") & data$date<=as.Date("2017-06-30")] = "17/1"
+data$time[data$date>=as.Date("2017-07-01") & data$date<=as.Date("2017-12-31")] = "17/2"
+data$time[data$date>=as.Date("2018-01-01") & data$date<=as.Date("2018-06-30")] = "18/1"
+data$time[data$date>=as.Date("2018-07-01") & data$date<=as.Date("2018-12-31")] = "18/2"
+data$time[data$date>=as.Date("2019-01-01") & data$date<=as.Date("2019-06-30")] = "19/1"
+data$time[data$date>=as.Date("2019-07-01") & data$date<=as.Date("2019-12-31")] = "19/2"
+
+data$time2 = data$time
+data$time2 = str_replace(data$time2, "/", "_")
+
+data$stage = 0
+data$stage[data$m_questions==1]= 1
+data$stage[data$u_questions==1]= 2
+data$stage[data$queen_debate_others==1]= 3
+data$stage[data$queen_debate_day1==1]= 4
+data$stage[data$pm_questions==1]= 5
+```
+
+Inspecting data and selecting some parts of data for the research
+
+```{r, eval=FALSE}
+#Filtering data columns
+library(tidyverse)
+library(readr)
+library(tidytext)
+library(quanteda)
+library(textdata)
+
+colnames(data)
+data <- data %>%
+  select(last_name, first_name, date, female, age, party, text)
+head(data)
+```
+
+Defining research data by filtering research words
+
+```{r, eval=FALSE}
+# Filtering data containing immigration related words
+# Define the keywords to search for
+immig_words <- c('immigration', 'immigrant', 'asylum')
+visa_words <- "\\b(UK)?visas?\\b"
+all_words <- paste0(c(paste0(immig_words, collapse = "|"), visa_words), collapse = "|")
+
+# lower case text with keywords
+tidy_data_notoken <- data %>%
+  mutate(desc = tolower(text)) %>%
+  filter(grepl(all_words, desc))
+```
+
+# 1. Word frequency of data
+
+Making 'Year' column
+
+```{r, eval=FALSE}
+# Make 'Year' using 'date'
+tidy_data_notoken$Year <- format(as.Date(tidy_data_notoken$date), "%Y")
+data$Year <- format(as.Date(data$date), "%Y")
+
+# Count the number of text by year and party
+text_count <- tidy_data_notoken %>% 
+  group_by(Year, party) %>% 
+  summarise(n = n(), .groups = 'drop')
+
+text_count$Year <- as.numeric(as.character(text_count$Year)) # Make 'Year' Column of numeric character.
+```
+
+A Simple descriptive plot - The number of immigration related texts by party
+
+```{r,eval=FALSE}
+# Plotting counts of immigration texts by party
+ggplot(text_count, aes(x = Year, y = n, group = party, color = party)) +
+  geom_line() +
+  labs(y = "Immigration texts num", x = "Year") +
+  scale_x_continuous(breaks = seq(min(text_count$Year), max(text_count$Year), by = 4))
+  theme_minimal()
+```
+
+Dividing the number of immigration texts by the total number of texts
+
+```{r,eval=FALSE}
+# Count the total number of texts in data by year and party
+data_count <- data %>%
+  group_by(Year, party) %>%
+  summarise(total_n = n(), .groups = 'drop')
+
+# Merge the counts and calculate the ratio
+ratio_count <- merge(text_count, data_count, by = c("Year", "party"))
+ratio_count$ratio <- with(ratio_count, n / total_n)
+
+# Only counts more than 100 texts
+filtered_ratio_count <- ratio_count %>%
+  filter(n > 100)
+
+filtered_ratio_count$Year <- as.numeric(as.character(filtered_ratio_count$Year))
+```
+
+A ratio plot of a number of immigration related texts by total texts
+
+```{r,eval=FALSE}
+#Plotting the ratios
+ggplot(filtered_ratio_count, aes(x = Year, y = ratio, group = party, color = party)) +
+  geom_line() +
+  labs(y = "% Immigration Texts (n>100)", x = "Year") +
+  scale_y_continuous(labels = scales::percent_format(), expand = c(0, 0), limits = c(0, NA)) +
+  scale_x_continuous(breaks = seq(min(filtered_ratio_count$Year), max(filtered_ratio_count$Year), by = 4)) +
+  theme_minimal()
+```
+
+Tokenisation and processing stop words
+
+```{r,eval=FALSE}
+# Tokenisation & removing stop words
+tidy_data <- tidy_data_notoken %>%
+  unnest_tokens(word, desc) %>%
+  filter(str_detect(word, "[a-z]")) %>%
+  filter(!word %in% stop_words$word)
+
+tidy_data <- tidy_data %>%
+  arrange(date)
+tidy_data$order <- 1:nrow(tidy_data) # Make orders of each word
+
+# Common tokens
+word_count <- tidy_data %>%
+  count(word, sort = T)
+
+show(word_count)
+
+# Common tokens by year
+word_count_year <- tidy_data %>%
+  group_by(Year) %>%
+  count(word, sort = T)
+
+show(word_count_year)
+
+# Comon tokens by party
+word_count_party <- tidy_data %>%
+  group_by(party) %>%
+  count(word, sort = T)
+
+show(word_count_party)
+```
+
+# 2. Sentiment Analysis Using 'NRC' Sentiment Dictionary
+
+## 1)Total sentiment of immigration related texts
+
+Getting NRC sentiment dictionary and tidying data by calculating sentiment ratio
+
+```{r,eval=FALSE}
+get_sentiments("nrc")
+
+# Make nrc sentiment tables of data
+nrc_data <- tidy_data %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  count(date, index = order %/% 1000, sentiment) %>%
+  spread(key = sentiment, value = n, fill = 0) %>%
+  mutate(ratio = negative / (positive+1)) # Calculating negative/positive ratio. Adding 1 to avoid the 0 denominator
+
+# Check sentiments
+colnames(nrc_data)
+```
+
+Plotting the total negative ratio
+
+```{r,eval=FALSE}
+# Total sentiment of text including immigration related words plot
+nrc_data %>%
+  ggplot(aes(date, ratio)) +
+  geom_point(alpha=0.25) +
+  geom_smooth(method="loess", alpha=0.5) +
+  labs(y = "Total NRC sentiment negative ratio", x = "Date") +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col="red") +
+  annotate("text", x = as.Date("2007-09-24"), y = 5, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 4)
+```
+
+## 2) Negative ratio plots by party
+
+Calculating NRC sentiment negative ratios of texts which contain immigration related words *by party*
+
+```{r,eval=FALSE}
+# Arranging data by party and calculate the ratio of negative sentiment.
+nrc_data_party <- tidy_data %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  group_by(party, date) %>%
+  count(sentiment) %>%
+  spread(key = sentiment, value = n, fill = 0) %>%
+  mutate(ratio = negative/(positive+1)) %>%
+  ungroup()
+
+filtered_nrc_data_party <-nrc_data_party %>%
+  group_by(party) %>%
+  filter(n() > 100) %>% # party with more than 100 related words
+  ungroup()
+```
+
+Plotting a negative ratio plot of party. Points indicate the actual scores while smooth lines show the trends.
+
+```{r,eval=FALSE}
+# A negative sentiment ratio plot of four parties
+filtered_nrc_data_party %>%
+  ggplot(aes(date, ratio, color = party)) +
+  geom_point(alpha=0.5, size = 1) +
+  geom_smooth(method="loess", se = F, alpha=0.7, size = 1) +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  labs(y = "NRC Sentiment Negative Ratio by Party", x = "Date") +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col="red", size = 1) +
+  annotate("text", x = as.Date("2007-09-24"), y = 4, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 4) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Make the plot above readable, dividing plots by party
+
+```{r,eval=FALSE}
+# Faceting by party
+filtered_nrc_data_party %>%
+  ggplot(aes(x = date, y = ratio, color = party)) +
+  geom_point(alpha = 0.5, size = 2) +
+  geom_smooth(method = "loess", se = FALSE, alpha = 0.7, size = 1) +
+  labs(y = "NRC Sentiment Negative Ratio", x = "Date") +
+  facet_wrap(~party, scales = "free_y") +  
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red", size = 1) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+## 3) Sentiments counts by party
+
+What is the most common sentiment? Summing up scores of sentiments by party to compare.
+
+```{r,eval=FALSE}
+# Total sentiment word counts by party
+dominant_senti_nrc_party <-filtered_nrc_data_party %>%
+  group_by(party) %>%
+  summarise(across(c(anger, anticipation, disgust, fear, joy, sadness, surprise, trust, negative, positive), sum, na.rm = T))
+
+show(dominant_senti_nrc_party)
+```
+
+## 4) Sentiment changes by party
+
+Beyond negative/positive ratio, focusing on specific sentiments trends by party.
+
+```{r,eval=FALSE}
+# Combining all sentiments into one column
+long_nrc_data <- filtered_nrc_data_party %>%
+  pivot_longer(cols = c(anger, fear, trust, sadness, disgust, anticipation, surprise, joy), names_to = "sentiment", values_to = "score")
+```
+
+Faceting plots to compare the sentiment changes of each party
+
+```{r,eval=FALSE}
+# Plotting specific sentiment changes by party
+long_nrc_data %>%
+  ggplot(aes(x = date, y = score, color = sentiment)) +
+  geom_smooth(method = "loess", se = F, alpha = 1, size = 1) +
+  geom_point(alpha = 0.5, size = 0.5) + 
+  facet_wrap(~ party, scales = "free_y") +
+  labs(x = "Date", y = "Score") +
+  theme_minimal() +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+To make sentiment points recognizable, adjusting the shapes of points by sentiment and plotting
+
+```{r,eval=FALSE}
+# Shaping sentiment points differently
+shape_mapping <- c("anger" = 17, "disgust" = 18, "fear" = 19, "sadness" = 8, "trust" = 21, "anticipation" = 22, "surprise" = 23, "joy" = 24)
+
+long_nrc_data %>%
+  ggplot(aes(x = date, y = score, color = sentiment)) +
+  geom_smooth(method = "loess", se = F, alpha = 0.75, size = 0.75) +  
+  geom_point(aes(shape = sentiment), alpha = 0.5, size = 0.5) + 
+  facet_wrap(~ party, scales = "free_y", nrow = 2) + 
+  labs(x = "Date", y = "Score") +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Selecting negative sentiments to confirm sentiment changes
+
+```{r,eval=FALSE}
+# Specifying negative feelings only
+long_nrc_data_neg <- filtered_nrc_data_party %>%
+  pivot_longer(cols = c(anger, fear, sadness, disgust), names_to = "sentiment_negative", values_to = "score")
+
+# Plots of specific negative sentiments by party 
+long_nrc_data_neg %>%
+  ggplot(aes(x = date, y = score, color = sentiment_negative)) +
+  geom_smooth(method = "loess", se = F, alpha = 0.75, size = 1) +  
+  geom_point(aes(shape = sentiment_negative), alpha = 0.5, size = 1) + 
+  facet_wrap(~ party, scales = "free_y", nrow = 2) + 
+  labs(x = "Date", y = "Score") +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+## 5) Random sample sentiment
+
+To compare with sentiment trends of immigration related text, make a random sample of 10000 and do sentiment analysis
+
+```{r,eval=FALSE}
+# Random sampling
+data_sample <- data %>%
+  sample_n(10000)
+
+# tidy sample
+tidy_samp <- data_sample %>%
+  mutate(desc = tolower(text)) %>%
+  unnest_tokens(word, desc) %>%
+  filter(str_detect(word, "[a-z]")) %>%
+  filter(!word %in% stop_words$word) %>%
+  arrange(date)
+
+tidy_samp$order <- 1:nrow(tidy_samp)
+
+# Applying NRC dictionary and calculating total negative ratio
+samp_nrc_data <- tidy_samp %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  count(date, index = order %/% 1000, sentiment) %>%
+  spread(key = sentiment, value = n, fill = 0) %>%
+  mutate(ratio = negative / (positive+1))
+
+#Applying NRC dictionary and calculating negative ratio by party
+samp_nrc_party <- tidy_samp %>%
+  inner_join(get_sentiments("nrc"), by = "word") %>%
+  group_by(party, date) %>%
+  count(sentiment) %>%
+  spread(key = sentiment, value = n, fill = 0) %>%
+  mutate(ratio = negative / (positive+1)) %>%
+  ungroup()
+
+filtered_samp_nrc_party <- samp_nrc_party %>%
+  group_by(party) %>%
+  filter(n() > 100) %>%
+  ungroup()
+```
+
+A plot of sample text negative sentiment ratio by party
+
+```{r,eval=FALSE}
+filtered_samp_nrc_party %>%
+  ggplot(aes(date, ratio, color = party)) +
+  geom_point(alpha=0.25) +
+  geom_smooth(method="loess", se = F, alpha=0.25, size = 1.5) +
+  labs(y = "Sample NRC sentiment negative ratio by party", x = "Date") +
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red", size = 1) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Dividing the sample sentiment plot by party
+
+```{r,eval=FALSE}
+# Faceting plots by party
+filtered_samp_nrc_party %>%
+  ggplot(aes(date, ratio, color = party)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess", se = F, alpha = 0.7, size = 1) +
+  labs(y = "Sample NRC Sentiment Negative Ratio", x = "Date") +
+  facet_wrap(~party, scales = "free_y") +  
+  geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red", size = 1) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+# 3. Word Embedding GloVe
+
+```{r,eval=FALSE}
+# Set up
+library(text2vec) 
+library(stringr)
+library(umap) 
+library(ggrepel)
+```
+
+## 1) Training total immigration related texts
+
+Training process
+
+```{r,eval=FALSE}
+# choice parameters
+WINDOW_SIZE <- 6 # context up to 6 words
+DIM <- 300 # the length of the word vector
+ITERS <- 100 # the maximum number of iterations
+COUNT_MIN <- 10 # minimum count of words
+
+# shuffle text
+set.seed(42L) # for reproducibility
+glove_text <- sample(tidy_data_notoken$desc)
+
+# create vocab
+tokens <- space_tokenizer(glove_text) # tokenizing
+it <- itoken(tokens, progressbar = FALSE) # create the vocabulary object
+vocab <- create_vocabulary(it) # create a vocabulary
+vocab_pruned <- prune_vocabulary(vocab, term_count_min = COUNT_MIN)  # keep only words that meet count threshold
+
+#vectorize and create term co-occurrence matrix
+vectorizer <- vocab_vectorizer(vocab_pruned)
+tcm <- create_tcm(it, vectorizer, skip_grams_window = WINDOW_SIZE, skip_grams_window_context = "symmetric", 
+                  weights = rep(1, WINDOW_SIZE))
+```
+
+Setting model parameters
+
+```{r,eval=FALSE}
+#set model parameters
+glove <- GlobalVectors$new(rank = DIM, x_max = 100, learning_rate = 0.05)
+
+# fit model
+word_vectors_main <- glove$fit_transform(tcm, n_iter = ITERS, convergence_tol = 0.001, n_threads = RcppParallel::defaultNumThreads())
+
+# get output 
+word_vectors_context <- glove$components
+glove_embedding <- word_vectors_main + t(word_vectors_context)  # word vectors. combine main and context word vectors
+
+#save 
+saveRDS(glove_embedding, file = "local_glove.rds")
+```
+
+Visulalization of GloVe word embedding model by using umap.
+
+```{r,eval=FALSE}
+# GloVe dimension reduction (two dimension)
+glove_umap <- umap(glove_embedding, n_components = 2, metric = "cosine", n_neighbors = 25, min_dist = 0.1, spread=2)
+
+# Put results in a dataframe for ggplot
+df_glove_umap <- as.data.frame(glove_umap[["layout"]])
+
+# Add the labels of the words to the dataframe
+df_glove_umap$word <- rownames(df_glove_umap)
+colnames(df_glove_umap) <- c("UMAP1", "UMAP2", "word")
+```
+
+Plot the total word embedding of 'immigration' with the GloVe model generated above
+
+```{r,eval=FALSE}
+word <- glove_embedding["immigration",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding, y = word, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words <- df_glove_umap %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words, aes(x = UMAP1, y = UMAP2)) + 
+      geom_point(show.legend = FALSE) + 
+      geom_text(aes(UMAP1, UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+      labs(title = "GloVe word embedding of words related to 'immigration'") +
+      theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+## 2) Training by party and pre/post economic crisis
+
+To make four different GloVe embedding models, dividing data by party and date
+
+```{r,eval=FALSE}
+library(RcppParallel)
+
+# filter data by party and date. Now have pre/post economic crisis text data of Conservative and Labour party 
+data_conser_pre <- filter(tidy_data_notoken, party == "Conservative" & date < as.Date("2007-09-24"))
+data_labour_pre <- filter(tidy_data_notoken, party == "Labour" & date < as.Date("2007-09-24"))
+
+data_conser_post <- filter(tidy_data_notoken, party == "Conservative" & date >= as.Date("2007-09-24"))
+data_labour_post <- filter(tidy_data_notoken, party == "Labour" & date >= as.Date("2007-09-24"))
+```
+
+### (1) The GloVe model for *Conservative party before the 2008 economic crisis*
+
+Training process
+
+```{r,eval=FALSE}
+set.seed(42L)
+glove_text_conser_pre <- sample(data_conser_pre$desc)
+
+tokens_conser_pre <- space_tokenizer(glove_text_conser_pre)
+it_conser_pre <- itoken(tokens_conser_pre, progressbar = FALSE)
+vocab_conser_pre <- create_vocabulary(it_conser_pre)
+vocab_pruned_conser_pre <- prune_vocabulary(vocab_conser_pre, term_count_min = COUNT_MIN)
+
+vectorizer_conser_pre <- vocab_vectorizer(vocab_pruned_conser_pre)
+tcm_conser_pre <- create_tcm(it_conser_pre, vectorizer_conser_pre, skip_grams_window = WINDOW_SIZE, skip_grams_window_context = "symmetric", weights = rep(1, WINDOW_SIZE))
+
+glove_conser_pre <- GlobalVectors$new(rank = DIM, x_max = 100, learning_rate = 0.05)
+word_vectors_main_conser_pre <- glove_conser_pre$fit_transform(tcm_conser_pre, n_iter = ITERS, convergence_tol = 0.001, n_threads = defaultNumThreads())
+
+word_vectors_context_conser_pre <- glove_conser_pre$components
+glove_embedding_conser_pre <- word_vectors_main_conser_pre + t(word_vectors_context_conser_pre)
+
+saveRDS(glove_embedding_conser_pre, file = "local_glove_conser_pre.rds")
+```
+
+Total GloVe word embedding two dimensional umap
+
+```{r,eval=FALSE}
+# Plotting the whole word embeddings of pre-crisis Conservative party immigration related text
+umap_conser_pre <- umap(glove_embedding_conser_pre, n_components = 2, metric = "cosine", n_neighbors = 25, min_dist = 0.1, spread = 2)
+
+df_umap_conser_pre <- as.data.frame(umap_conser_pre[["layout"]])
+df_umap_conser_pre$word <- rownames(df_umap_conser_pre)
+colnames(df_umap_conser_pre) <- c("Pre_Cons1", "Pre_Cons2", "word")
+
+ggplot(df_umap_conser_pre) +
+  geom_point(aes(x = Pre_Cons1, y = Pre_Cons2), color = 'blue', size = 0.05) +
+  labs(title = "Conservative Party (Pre-Crisis): Word Embeddings of GloVe and UMAP") +
+  theme_minimal()
+```
+
+Pre-crisis Conservative party word embedding of words related to *immigration*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (Case1: immigration)
+word_conser_pre_1 <- glove_embedding_conser_pre["immigration",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_pre, y = word_conser_pre_1, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_pre_1 <- df_umap_conser_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_pre_1, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Pre-Crisis) word embedding of 'immigration'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Conservative party word embedding of words related to *immigrants*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (Case2: immigrants)
+word_conser_pre_2 <- glove_embedding_conser_pre["immigrants",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_pre, y = word_conser_pre_2, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_pre_2 <- df_umap_conser_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_pre_2, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Pre-Crisis) word embedding of 'immigrants'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Conservative party word embedding of words related to *asylums*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (Case3: asylums)
+word_conser_pre_3 <- glove_embedding_conser_pre["asylums",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_pre, y = word_conser_pre_3, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_pre_3 <- df_umap_conser_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_pre_3, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Pre-Crisis) word embedding of 'asylums'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Conservative party word embedding of words related to *asylum*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (asylum)
+word_conser_pre_4 <- glove_embedding_conser_pre["asylum",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_pre, y = word_conser_pre_4, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_pre_4 <- df_umap_conser_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_pre_4, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Pre-Crisis) word embedding of 'asylum'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+### (2) The GloVe model for Conservative party after the 2008 economic crisis
+
+Training process
+
+```{r,eval=FALSE}
+set.seed(42L)
+glove_text_conser_post <- sample(data_conser_post$desc)
+
+tokens_conser_post <- space_tokenizer(glove_text_conser_post)
+it_conser_post <- itoken(tokens_conser_post, progressbar = FALSE)
+vocab_conser_post <- create_vocabulary(it_conser_post)
+vocab_pruned_conser_post <- prune_vocabulary(vocab_conser_post, term_count_min = COUNT_MIN)
+
+vectorizer_conser_post <- vocab_vectorizer(vocab_pruned_conser_post)
+tcm_conser_post <- create_tcm(it_conser_post, vectorizer_conser_post, skip_grams_window = WINDOW_SIZE, skip_grams_window_context = "symmetric", weights = rep(1, WINDOW_SIZE))
+
+glove_conser_post <- GlobalVectors$new(rank = DIM, x_max = 100, learning_rate = 0.05)
+word_vectors_main_conser_post <- glove_conser_post$fit_transform(tcm_conser_post, n_iter = ITERS, convergence_tol = 0.001, n_threads = defaultNumThreads())
+
+word_vectors_context_conser_post <- glove_conser_post$components
+glove_embedding_conser_post <- word_vectors_main_conser_post + t(word_vectors_context_conser_post)
+
+saveRDS(glove_embedding_conser_post, file = "local_glove_conser_post.rds")
+```
+
+Total GloVe word embedding two dimensional umap
+
+```{r,eval=FALSE}
+# Plotting the whole word embeddings of post-crisis Conservative party immigration related text
+umap_conser_post <- umap(glove_embedding_conser_post, n_components = 2, metric = "cosine", n_neighbors = 25, min_dist = 0.1, spread = 2)
+
+df_umap_conser_post <- as.data.frame(umap_conser_post[["layout"]])
+df_umap_conser_post$word <- rownames(df_umap_conser_post)
+colnames(df_umap_conser_post) <- c("Post_Cons1", "Post_Cons2", "word")
+
+ggplot(df_umap_conser_post) +
+  geom_point(aes(x = Post_Cons1, y = Post_Cons2), color = 'blue', size = 0.05) +
+  labs(title = "Conservative Party (Post-Crisis): Word Embeddings of GloVe and UMAP") +
+  theme_minimal()
+```
+
+Post-crisis Conservative party word embedding of words related to *immigration*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (Case1: immigration)
+word_conser_post_1 <- glove_embedding_conser_post["immigration",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_post, y = word_conser_post_1, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_post_1 <- df_umap_conser_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_post_1, aes(x = Post_Cons1, y = Post_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Post-Crisis) word embedding of 'immigration'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Post-crisis Conservative party word embedding of words related to *immigrants*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case2: immigrants)
+word_conser_post_2 <- glove_embedding_conser_post["immigrants",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_post, y = word_conser_post_2, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_post_2 <- df_umap_conser_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_post_2, aes(x = Post_Cons1, y = Post_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Post-Crisis) word embedding of 'immigrants'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Post-crisis Conservative party word embedding of words related to *asylums*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case3: asylums)
+word_conser_post_3 <- glove_embedding_conser_post["asylums",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_post, y = word_conser_post_3, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_post_3 <- df_umap_conser_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_post_3, aes(x = Post_Cons1, y = Post_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Post-Crisis) word embedding of 'asylums'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Post-crisis Conservative party word embedding of words related to *asylum*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (Case4: asylum)
+word_conser_post_4 <- glove_embedding_conser_post["asylum",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_conser_post, y = word_conser_post_4, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_conser_post_4 <- df_umap_conser_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_conser_post_4, aes(x = Post_Cons1, y = Post_Cons2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Conservative party (Post-Crisis) word embedding of 'asylum'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+### (3) Training model for Labour party before the 2008 economic crisis
+
+Training process
+
+```{r,eval=FALSE}
+set.seed(42L)
+glove_text_labour_pre <- sample(data_labour_pre$desc)
+
+tokens_labour_pre <- space_tokenizer(glove_text_labour_pre)
+it_labour_pre <- itoken(tokens_labour_pre, progressbar = FALSE)
+vocab_labour_pre <- create_vocabulary(it_labour_pre)
+vocab_pruned_labour_pre <- prune_vocabulary(vocab_labour_pre, term_count_min = COUNT_MIN)
+
+vectorizer_labour_pre <- vocab_vectorizer(vocab_pruned_labour_pre)
+tcm_labour_pre <- create_tcm(it_labour_pre, vectorizer_labour_pre, skip_grams_window = WINDOW_SIZE, skip_grams_window_context = "symmetric", weights = rep(1, WINDOW_SIZE))
+
+glove_labour_pre <- GlobalVectors$new(rank = DIM, x_max = 100, learning_rate = 0.05)
+word_vectors_main_labour_pre <- glove_labour_pre$fit_transform(tcm_labour_pre, n_iter = ITERS, convergence_tol = 0.001, n_threads = defaultNumThreads())
+
+word_vectors_context_labour_pre <- glove_labour_pre$components
+glove_embedding_labour_pre <- word_vectors_main_labour_pre + t(word_vectors_context_labour_pre)
+
+saveRDS(glove_embedding_labour_pre, file = "local_glove_labour_pre.rds")
+```
+
+Total GloVe word embedding two dimensional umap
+
+```{r,eval=FALSE}
+# Plotting the whole word embeddings of pre-crisis Labour party immigration related text
+umap_labour_pre <- umap(glove_embedding_labour_pre, n_components = 2, metric = "cosine", n_neighbors = 25, min_dist = 0.1, spread = 2)
+
+df_umap_labour_pre <- as.data.frame(umap_labour_pre[["layout"]])
+df_umap_labour_pre$word <- rownames(df_umap_labour_pre)
+colnames(df_umap_labour_pre) <- c("Pre_Lab1", "Pre_Lab2", "word")
+
+ggplot(df_umap_labour_pre) +
+  geom_point(aes(x = Pre_Lab1, y = Pre_Lab2), color = 'blue', size = 0.05) +
+  labs(title = "Labour Party (Pre-Crisis): Word Embeddings of GloVe and UMAP") +
+  theme_minimal()
+```
+
+Pre-crisis Labour party word embedding of words related to *immigration*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case1: immigration)
+word_labour_pre_1 <- glove_embedding_labour_pre["immigration",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_labour_pre, y = word_labour_pre_1, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_labour_pre_1 <- df_umap_labour_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_labour_pre_1, aes(x = Pre_Lab1, y = Pre_Lab2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Lab1, Pre_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Labour party (Pre-Crisis) word embedding of 'immigration'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Labour party word embedding of words related to *immigrants*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (Case2: immigrants)
+word_labour_pre_2 <- glove_embedding_labour_pre["immigrants",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_labour_pre, y = word_labour_pre_2, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_labour_pre_2 <- df_umap_labour_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_labour_pre_2, aes(x = Pre_Lab1, y = Pre_Lab2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Lab1, Pre_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Labour party (Pre-Crisis) word embedding of 'immigrants'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Labour party word embedding of words related to *asylum*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case3: asylum)
+word_labour_pre_3 <- glove_embedding_labour_pre["asylum",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_labour_pre, y = word_labour_pre_3, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_labour_pre_3 <- df_umap_labour_pre %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_labour_pre_3, aes(x = Pre_Lab1, y = Pre_Lab2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Pre_Lab1, Pre_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Labour party (Pre-Crisis) word embedding of 'asylum'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+### (4) Training model for Labour party After the 2008 economic crisis
+
+Training process
+
+```{r,eval=FALSE}
+set.seed(42L)
+glove_text_labour_post <- sample(data_labour_post$desc)
+
+tokens_labour_post <- space_tokenizer(glove_text_labour_post)
+it_labour_post <- itoken(tokens_labour_post, progressbar = FALSE)
+vocab_labour_post <- create_vocabulary(it_labour_post)
+vocab_pruned_labour_post <- prune_vocabulary(vocab_labour_post, term_count_min = COUNT_MIN)
+
+vectorizer_labour_post <- vocab_vectorizer(vocab_pruned_labour_post)
+tcm_labour_post <- create_tcm(it_labour_post, vectorizer_labour_post, skip_grams_window = WINDOW_SIZE, skip_grams_window_context = "symmetric", weights = rep(1, WINDOW_SIZE))
+
+glove_labour_post <- GlobalVectors$new(rank = DIM, x_max = 100, learning_rate = 0.05)
+word_vectors_main_labour_post <- glove_labour_post$fit_transform(tcm_labour_post, n_iter = ITERS, convergence_tol = 0.001, n_threads = defaultNumThreads())
+
+word_vectors_context_labour_post <- glove_labour_post$components
+glove_embedding_labour_post <- word_vectors_main_labour_post + t(word_vectors_context_labour_post)
+
+saveRDS(glove_embedding_labour_post, file = "local_glove_labour_post.rds")
+```
+
+Total GloVe word embedding two dimensional umap
+
+```{r,eval=FALSE}
+# Plotting the whole word embeddings of post-crisis Labour party immigration related text
+umap_labour_post <- umap(glove_embedding_labour_post, n_components = 2, metric = "cosine", n_neighbors = 25, min_dist = 0.1, spread = 2)
+
+df_umap_labour_post <- as.data.frame(umap_labour_post[["layout"]])
+df_umap_labour_post$word <- rownames(df_umap_labour_post)
+colnames(df_umap_labour_post) <- c("Post_Lab1", "Post_Lab2", "word")
+
+ggplot(df_umap_labour_post) +
+  geom_point(aes(x = Post_Lab1, y = Post_Lab2), color = 'blue', size = 0.05) +
+  labs(title = "Labour Party (Post-Crisis): Word Embeddings via GloVe and UMAP") +
+  theme_minimal()
+```
+
+Post-crisis Labour party word embedding of words related to *immigration*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case1: immigration)
+word_labour_post_1 <- glove_embedding_labour_post["immigration",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_labour_post, y = word_labour_post_1, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_labour_post_1 <- df_umap_labour_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_labour_post_1, aes(x = Post_Lab1, y = Post_Lab2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Lab1, Post_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Labour party (Post-Crisis) word embedding of 'immigration'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Labour party word embedding of words related to *immigrants*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case2: immigrants)
+word_labour_post_2 <- glove_embedding_labour_post["immigrants",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_labour_post, y = word_labour_post_2, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_labour_post_2 <- df_umap_labour_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_labour_post_2, aes(x = Post_Lab1, y = Post_Lab2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Lab1, Post_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Labour party (Post-Crisis) word embedding of 'immigrants'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
+
+Pre-crisis Labour party word embedding of words related to *asylum*
+
+```{r,eval=FALSE}
+# Plot the word embedding of words that are related for the GloVe model (case3: asylum)
+word_labour_post_3 <- glove_embedding_labour_post["asylum",, drop = FALSE]
+cos_sim = sim2(x = glove_embedding_labour_post, y = word_labour_post_3, method = "cosine", norm = "l2")
+select <- data.frame(rownames(as.data.frame(head(sort(cos_sim[,1], decreasing = TRUE), 25))))
+colnames(select) <- "word"
+selected_words_labour_post_3 <- df_umap_labour_post %>% 
+  inner_join(y=select, by= "word")
+
+#The ggplot visual for GloVe
+ggplot(selected_words_labour_post_3, aes(x = Post_Lab1, y = Post_Lab2)) + 
+  geom_point(show.legend = FALSE) + 
+  geom_text(aes(Post_Lab1, Post_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
+  labs(title = "Labour party (Post-Crisis) word embedding of 'asylum'") +
+  theme(plot.title = element_text(hjust = .5, size = 14))
+```
