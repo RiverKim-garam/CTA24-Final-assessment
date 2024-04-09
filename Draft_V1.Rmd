@@ -107,6 +107,11 @@ all_words <- paste0(c(paste0(immig_words, collapse = "|"), visa_words), collapse
 tidy_data_notoken <- data %>%
   mutate(desc = tolower(text)) %>%
   filter(grepl(all_words, desc))
+
+tidy_data_notoken %>%
+  group_by(party) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
 ```
 
 # 1. Word frequency of data
@@ -154,6 +159,7 @@ filtered_ratio_count <- ratio_count %>%
   filter(n > 100)
 
 filtered_ratio_count$Year <- as.numeric(as.character(filtered_ratio_count$Year))
+
 ```
 
 A ratio plot of a number of immigration related texts by total texts
@@ -439,7 +445,7 @@ filtered_samp_nrc_party %>%
 # Set up
 library(text2vec) 
 library(stringr)
-library(umap) 
+library(umap)
 library(ggrepel)
 ```
 
@@ -493,7 +499,7 @@ Modelling takes time. So I will use the prepared model made by same process for 
 
 ```{r}
 url <- "https://github.com/RiverKim-garam/CTA24-Final-assessment/blob/main/local_glove.rds?raw=true"
-golve_embedding <- readRDS(url(url, method = "libcurl"))
+glove_embedding <- readRDS(url(url, method = "libcurl"))
 ```
 
 Visulalization of GloVe word embedding model by using umap.
@@ -508,6 +514,8 @@ df_glove_umap <- as.data.frame(glove_umap[["layout"]])
 # Add the labels of the words to the dataframe
 df_glove_umap$word <- rownames(df_glove_umap)
 colnames(df_glove_umap) <- c("UMAP1", "UMAP2", "word")
+
+
 ```
 
 Plot the total word embedding of 'immigration' with the GloVe model generated above
