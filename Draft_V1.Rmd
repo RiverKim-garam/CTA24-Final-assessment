@@ -1,5 +1,5 @@
 ---
-title: "Draft_markdown_v1"
+title: "Essay_markdown_final"
 author: "River Kim"
 date: "2024-04-07"
 output:
@@ -143,7 +143,7 @@ ggplot(text_count, aes(x = Year, y = n, group = party, color = party)) +
   labs(y = "Immigration texts num", x = "Year") +
   theme_minimal() +
   geom_vline(xintercept = as.numeric(format(as.Date("2007-09-14"), "%Y")), col="red") +
-  annotate("text", x = as.numeric(format(as.Date("2007-09-14"), "%Y")), y = 600, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 3)
+  annotate("text", x = as.numeric(format(as.Date("2007-09-14"), "%Y")), y = 600, label="Northern Rock\nBailout", angle=90, color = "black", size = 3)
 
 ```
 
@@ -178,7 +178,7 @@ ggplot(filtered_ratio_count, aes(x = Year, y = ratio, group = party, color = par
   scale_x_continuous(breaks = seq(min(filtered_ratio_count$Year), max(filtered_ratio_count$Year), by = 4)) +
   theme_minimal() +
   geom_vline(xintercept = as.numeric(format(as.Date("2007-09-14"), "%Y")), col="red") +
-  annotate("text", x = as.numeric(format(as.Date("2007-09-14"), "%Y")), y = 0.04, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 3)
+  annotate("text", x = as.numeric(format(as.Date("2007-09-14"), "%Y")), y = 0.04, label="Northern Rock\nBailout", angle=90, color = "black", size = 3)
 ```
 
 Tokenisation and processing stop words
@@ -248,7 +248,7 @@ nrc_data %>%
   geom_smooth(method="loess", alpha=0.5) +
   labs(y = "Total NRC sentiment negative ratio", x = "Date") +
   geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col="red") +
-  annotate("text", x = as.Date("2007-09-24"), y = 5, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 4)
+  annotate("text", x = as.Date("2007-09-24"), y = 5, label="Northern Rock\nBailout", angle=90, color = "black", size = 4)
 ```
 There is no time when particularly negative emotions are revealed. Rather, negative feelings toward immigrants are less visible after the financial crisis.
 
@@ -283,7 +283,7 @@ filtered_nrc_data_party %>%
   scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
   labs(y = "NRC Sentiment Negative Ratio by Party", x = "Date") +
   geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col="red", size = 1) +
-  annotate("text", x = as.Date("2007-09-24"), y = 4, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 4) +
+  annotate("text", x = as.Date("2007-09-24"), y = 4, label="Northern Rock\nBailout", angle=90, color = "black", size = 4) +
   theme_minimal() +
   theme(legend.position = "bottom")
 ```
@@ -382,6 +382,7 @@ long_nrc_data_neg %>%
   theme(legend.position = "bottom")
 ```
 Regarding negative sentiments, the Conservative party presents more diverse and fluctuated points than other parties. However, the general smooth lines stay steady.
+
 ## 5) Random sample sentiment
 
 To compare with sentiment trends of immigration related text, make a random sample of 10000 and do sentiment analysis
@@ -432,7 +433,7 @@ filtered_samp_nrc_party %>%
   geom_smooth(method="loess", se = F, alpha=0.25, size = 1.5) +
   labs(y = "Sample NRC sentiment negative ratio by party", x = "Date") +
   geom_vline(xintercept = as.numeric(as.Date("2007-09-14")), col = "red", size = 1) + 
-  annotate("text", x = as.Date("2007-09-24"), y = 5, label="Northern Rock\nLiquidity Support", angle=90, color = "black", size = 4)
+  annotate("text", x = as.Date("2007-09-24"), y = 5, label="Northern Rock\nBailout", angle=90, color = "black", size = 4)
   theme_minimal() +
   theme(legend.position = "bottom")
 ```
@@ -550,7 +551,7 @@ The ggplot visual for GloVe regarding total immigration related texts. Total par
 ggplot(selected_words, aes(x = UMAP1, y = UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(UMAP1, UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "GloVe word embedding of words related to 'immigration'") +
+  labs(title = "Total speech - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 I did it for confirming the modeling process, but we might need to use this map as a comparison plot. 
@@ -572,7 +573,7 @@ selected_words_2 <- df_glove_umap %>%
 ggplot(selected_words_2, aes(x = UMAP1, y = UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(UMAP1, UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Total parliament immigration related speech word embedding of 'immigrants'") +
+  labs(title = "Total speech - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 This can be also used for comparison. Also, word embedding maps tell us the general relationships between words, especially those we are interested in. 
@@ -594,7 +595,7 @@ selected_words_4 <- df_glove_umap %>%
 ggplot(selected_words_4, aes(x = UMAP1, y = UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(UMAP1, UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Total parliament immigration related speech word embedding of 'asylum'") +
+  labs(title = "Total speech - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -672,7 +673,7 @@ selected_words_pre_1 <- df_umap_pre %>%
 ggplot(selected_words_pre_1, aes(x = Pre_UMAP1, y = Pre_UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_UMAP1, Pre_UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "(Pre-Crisis) total parliament speech word embedding of 'immigration'") +
+  labs(title = "(Pre-Crisis) total speech - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -693,7 +694,7 @@ selected_words_pre_2 <- df_umap_pre %>%
 ggplot(selected_words_pre_2, aes(x = Pre_UMAP1, y = Pre_UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_UMAP1, Pre_UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "(Pre-Crisis) total parliament speech word embedding of 'immigrants'") +
+  labs(title = "(Pre-Crisis) total speech - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -714,7 +715,7 @@ selected_words_pre_3 <- df_umap_pre %>%
 ggplot(selected_words_pre_3, aes(x = Pre_UMAP1, y = Pre_UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_UMAP1, Pre_UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "(Pre-Crisis) total parliament speech word embedding of 'asylum'") +
+  labs(title = "(Pre-Crisis) total speech - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -786,7 +787,7 @@ selected_words_post_1 <- df_umap_post %>%
 ggplot(selected_words_post_1, aes(x = Post_UMAP1, y = Post_UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_UMAP1, Post_UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "(Post-Crisis) total parliament speech word embedding of 'immigration'") +
+  labs(title = "(Post-Crisis) total speech - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -807,7 +808,7 @@ selected_words_post_2 <- df_umap_post %>%
 ggplot(selected_words_post_2, aes(x = Post_UMAP1, y = Post_UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_UMAP1, Post_UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "(Post-Crisis) total parliament speech word embedding of 'immigrants'") +
+  labs(title = "(Post-Crisis) total speech - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -828,7 +829,7 @@ selected_words_post_4 <- df_umap_post %>%
 ggplot(selected_words_post_4, aes(x = Post_UMAP1, y = Post_UMAP2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_UMAP1, Post_UMAP2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "(Post-Crisis) total parliament speech word embedding of 'asylum'") +
+  labs(title = "(Post-Crisis) total speech - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 We can now compare the two periods with three different embedding maps. 
@@ -894,7 +895,7 @@ colnames(df_umap_conser_pre) <- c("Pre_Cons1", "Pre_Cons2", "word")
 ```{r}
 ggplot(df_umap_conser_pre) +
   geom_point(aes(x = Pre_Cons1, y = Pre_Cons2), color = 'blue', size = 0.05) +
-  labs(title = "Conservative Party (Pre-Crisis): Word Embeddings of GloVe and UMAP") +
+  labs(title = "Conservative (Pre-Crisis): Word Embeddings of GloVe and UMAP") +
   theme_minimal()
 ```
 
@@ -915,7 +916,7 @@ selected_words_conser_pre_1 <- df_umap_conser_pre %>%
 ggplot(selected_words_conser_pre_1, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Conservative party (Pre-Crisis) word embedding of 'immigration'") +
+  labs(title = "Conservative (Pre-Crisis) - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -936,7 +937,7 @@ selected_words_conser_pre_2 <- df_umap_conser_pre %>%
 ggplot(selected_words_conser_pre_2, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Conservative party (Pre-Crisis) word embedding of 'immigrants'") +
+  labs(title = "Conservative (Pre-Crisis) - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -957,7 +958,7 @@ selected_words_conser_pre_3 <- df_umap_conser_pre %>%
 ggplot(selected_words_conser_pre_3, aes(x = Pre_Cons1, y = Pre_Cons2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_Cons1, Pre_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Conservative party (Pre-Crisis) word embedding of 'asylum'") +
+  labs(title = "Conservative (Pre-Crisis) - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1007,7 +1008,7 @@ colnames(df_umap_conser_post) <- c("Post_Cons1", "Post_Cons2", "word")
 ```{r}
 ggplot(df_umap_conser_post) +
   geom_point(aes(x = Post_Cons1, y = Post_Cons2), color = 'blue', size = 0.05) +
-  labs(title = "Conservative Party (Post-Crisis): Word Embeddings of GloVe and UMAP") +
+  labs(title = "Conservative (Post-Crisis): Word Embeddings of GloVe and UMAP") +
   theme_minimal()
 ```
 
@@ -1028,7 +1029,7 @@ selected_words_conser_post_1 <- df_umap_conser_post %>%
 ggplot(selected_words_conser_post_1, aes(x = Post_Cons1, y = Post_Cons2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Conservative party (Post-Crisis) word embedding of 'immigration'") +
+  labs(title = "Conservative (Post-Crisis) - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1049,7 +1050,7 @@ selected_words_conser_post_2 <- df_umap_conser_post %>%
 ggplot(selected_words_conser_post_2, aes(x = Post_Cons1, y = Post_Cons2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Conservative party (Post-Crisis) word embedding of 'immigrants'") +
+  labs(title = "Conservative (Post-Crisis) - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1070,7 +1071,7 @@ selected_words_conser_post_4 <- df_umap_conser_post %>%
 ggplot(selected_words_conser_post_4, aes(x = Post_Cons1, y = Post_Cons2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_Cons1, Post_Cons2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Conservative party (Post-Crisis) word embedding of 'asylum'") +
+  labs(title = "Conservative (Post-Crisis) - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1120,7 +1121,7 @@ colnames(df_umap_labour_pre) <- c("Pre_Lab1", "Pre_Lab2", "word")
 ```{r}
 ggplot(df_umap_labour_pre) +
   geom_point(aes(x = Pre_Lab1, y = Pre_Lab2), color = 'blue', size = 0.05) +
-  labs(title = "Labour Party (Pre-Crisis): Word Embeddings of GloVe and UMAP") +
+  labs(title = "Labour (Pre-Crisis): Word Embeddings of GloVe and UMAP") +
   theme_minimal()
 ```
 
@@ -1141,7 +1142,7 @@ selected_words_labour_pre_1 <- df_umap_labour_pre %>%
 ggplot(selected_words_labour_pre_1, aes(x = Pre_Lab1, y = Pre_Lab2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_Lab1, Pre_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Labour party (Pre-Crisis) word embedding of 'immigration'") +
+  labs(title = "Labour (Pre-Crisis) - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1162,7 +1163,7 @@ selected_words_labour_pre_2 <- df_umap_labour_pre %>%
 ggplot(selected_words_labour_pre_2, aes(x = Pre_Lab1, y = Pre_Lab2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_Lab1, Pre_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Labour party (Pre-Crisis) word embedding of 'immigrants'") +
+  labs(title = "Labour (Pre-Crisis) - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1183,7 +1184,7 @@ selected_words_labour_pre_3 <- df_umap_labour_pre %>%
 ggplot(selected_words_labour_pre_3, aes(x = Pre_Lab1, y = Pre_Lab2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Pre_Lab1, Pre_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Labour party (Pre-Crisis) word embedding of 'asylum'") +
+  labs(title = "Labour (Pre-Crisis) - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1233,7 +1234,7 @@ colnames(df_umap_labour_post) <- c("Post_Lab1", "Post_Lab2", "word")
 ```{r}
 ggplot(df_umap_labour_post) +
   geom_point(aes(x = Post_Lab1, y = Post_Lab2), color = 'blue', size = 0.05) +
-  labs(title = "Labour Party (Post-Crisis): Word Embeddings via GloVe and UMAP") +
+  labs(title = "Labour (Post-Crisis): Word Embeddings via GloVe and UMAP") +
   theme_minimal()
 ```
 
@@ -1254,7 +1255,7 @@ selected_words_labour_post_1 <- df_umap_labour_post %>%
 ggplot(selected_words_labour_post_1, aes(x = Post_Lab1, y = Post_Lab2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_Lab1, Post_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Labour party (Post-Crisis) word embedding of 'immigration'") +
+  labs(title = "Labour (Post-Crisis) - 'immigration'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1275,7 +1276,7 @@ selected_words_labour_post_2 <- df_umap_labour_post %>%
 ggplot(selected_words_labour_post_2, aes(x = Post_Lab1, y = Post_Lab2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_Lab1, Post_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Labour party (Post-Crisis) word embedding of 'immigrants'") +
+  labs(title = "Labour (Post-Crisis) - 'immigrants'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
@@ -1296,7 +1297,7 @@ selected_words_labour_post_3 <- df_umap_labour_post %>%
 ggplot(selected_words_labour_post_3, aes(x = Post_Lab1, y = Post_Lab2)) + 
   geom_point(show.legend = FALSE) + 
   geom_text(aes(Post_Lab1, Post_Lab2, label = word), show.legend = FALSE, size = 2.5, vjust=-1.5, hjust=0) +
-  labs(title = "Labour party (Post-Crisis) word embedding of 'asylum'") +
+  labs(title = "Labour (Post-Crisis) - 'asylum'") +
   theme(plot.title = element_text(hjust = .5, size = 14))
 ```
 
